@@ -29,3 +29,21 @@ Vec2 Force::GenerateGravitationalForce(const Particle &a, const Particle &b,
     Vec2 attractionForce = attractionDirection * attractionMagnitude;
     return attractionForce;
 }
+
+Vec2 Force::GenerateSpringForce(const Particle &particle, Vec2 anchor,
+                                float restLength, float k) {
+    Vec2 distance = particle.position - anchor;
+    float displacement = distance.Magnitude() - restLength;
+    Vec2 sprintDirection = distance.UnitVector();
+    float sprintMagnitude = -k * displacement;
+    return sprintDirection * sprintMagnitude;
+}
+
+Vec2 Force::GenerateSpringForce(const Particle &particle, const Particle &b,
+                                float restLength, float k) {
+    Vec2 distance = particle.position - b.position;
+    float displacement = distance.Magnitude() - restLength;
+    Vec2 sprintDirection = distance.UnitVector();
+    float sprintMagnitude = -k * displacement;
+    return sprintDirection * sprintMagnitude;
+}

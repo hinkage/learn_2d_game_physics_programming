@@ -9,11 +9,11 @@ bool Application::IsRunning() { return running; }
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Particle *smallBall = new Particle(50, 100, 1.0);
+    Particle *smallBall = new Particle(50, 100, 2.0);
     smallBall->radius = 4.0f;
     particles.push_back(smallBall);
 
-    Particle *bigBall = new Particle(100, 100, 20.0);
+    Particle *bigBall = new Particle(100, 100, 5.0);
     bigBall->radius = 12.0f;
     particles.push_back(bigBall);
 
@@ -113,25 +113,30 @@ void Application::Update() {
         // particle->AddForce(wind);
 
         particle->AddForce(pushForce);
+
         Vec2 friction =
             Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
         particle->AddForce(friction);
 
         // F = mg
-        // Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
-        // particle->AddForce(weight);
+        Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
+        particle->AddForce(weight);
 
         // Inside liquid
-        // if (particle->position.y >= liquid.y) {
-        //     Vec2 drag =
-        //         Force::GenerateDragForce(*particle, 2.f);
-        //     particle->AddForce(drag);
-        // }
+        if (particle->position.y >= liquid.y) {
+            Vec2 drag = Force::GenerateDragForce(*particle, 2.f);
+            particle->AddForce(drag);
+        }
     }
-    Vec2 attraction =
-        Force::GenerateGravitationalForce(*particles[0], *particles[1], 5000.0, 5.0, 100.0);
-    particles[0]->AddForce(attraction);
-    particles[1]->AddForce(-attraction);
+
+    // Vec2 attraction = Force::GenerateGravitationalForce(
+    //     *particles[0], *particles[1], 5000.0, 5.0, 100.0);
+    // particles[0]->AddForce(attraction);
+    // particles[1]->AddForce(-attraction);
+
+    Vec2 springForce =
+        Force::GenerateSpringForce(*particles[0], anchor, restLength, k);
+    particles[0]->AddForce(springForce);
 
     for (auto particle : particles) {
         particle->Integrate(deltaTime);
@@ -158,6 +163,10 @@ void Application::Update() {
 
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
+
+    Graphics::DrawFillCircle(anchor.x, anchor.y, 5, 0xFF001155);
+    Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x,
+                       particles[0]->position.y, 0xFF313131);
 
     Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2,
                            liquid.w, liquid.h, 0xFF6E3713);

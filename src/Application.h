@@ -13,6 +13,11 @@ class Application {
 
     SDL_Rect liquid;
 
+    Vec2 anchor = Vec2(500.0, 0.0);
+    float k = 300;
+    float restLength = 200;
+    const int NUM_PARTICLES = 15;
+
   public:
     Application() = default;
     ~Application() = default;
