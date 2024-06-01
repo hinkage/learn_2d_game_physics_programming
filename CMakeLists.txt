@@ -18,6 +18,8 @@ set(src_files
     src/Physics/Particle.h
     src/Physics/Particle.cpp
     src/Physics/Constants.h
+    src/Physics/Force.h
+    src/Physics/Force.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

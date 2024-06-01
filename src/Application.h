@@ -2,12 +2,16 @@
 
 #include "./Graphics.h"
 #include "Physics/Particle.h"
+#include <vector>
 
 class Application {
   private:
     bool running = false;
     int timePreviousFrame = 0;
-    Particle *particle;
+    std::vector<Particle *> particles;
+    Vec2 pushForce = Vec2(0.0, 0.0);
+
+    SDL_Rect liquid;
 
   public:
     Application() = default;

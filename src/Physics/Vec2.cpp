@@ -44,8 +44,8 @@ Vec2 Vec2::UnitVector() const {
     Vec2 result = Vec2(0, 0);
     float length = Magnitude();
     if (length != 0.0) {
-        result.x /= length;
-        result.y /= length;
+        result.x = x / length;
+        result.y = y / length;
     }
     return result;
 }
