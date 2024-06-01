@@ -43,3 +43,6 @@ F_k is the kinetic friction force.
 
 N is the normal force.
 
+## Newton's Law of Universal Gravitation
+$$F_g = G \frac{m_1 m_2}{r^2}$$
+

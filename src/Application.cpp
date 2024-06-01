@@ -13,7 +13,7 @@ void Application::Setup() {
     smallBall->radius = 4.0f;
     particles.push_back(smallBall);
 
-    Particle *bigBall = new Particle(100, 100, 2.0);
+    Particle *bigBall = new Particle(100, 100, 20.0);
     bigBall->radius = 12.0f;
     particles.push_back(bigBall);
 
@@ -128,6 +128,10 @@ void Application::Update() {
         //     particle->AddForce(drag);
         // }
     }
+    Vec2 attraction =
+        Force::GenerateGravitationalForce(*particles[0], *particles[1], 5000.0, 5.0, 100.0);
+    particles[0]->AddForce(attraction);
+    particles[1]->AddForce(-attraction);
 
     for (auto particle : particles) {
         particle->Integrate(deltaTime);
