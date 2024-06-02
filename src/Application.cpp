@@ -9,9 +9,14 @@ bool Application::IsRunning() { return running; }
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    anchor = Vec2(Graphics::Width() / 2.0, 30);
+    int wh[][2] = {
+        {100, 100},
+        {300, 100},
+        {300, 300},
+        {100, 300},
+    };
     for (int i = 0; i < NUM_PARTICLES; i++) {
-        Particle *p = new Particle(anchor.x, anchor.y + (i * restLength), 2.0);
+        Particle *p = new Particle(wh[i][0], wh[i][1], 2.0);
         p->radius = 6;
         particles.push_back(p);
     }
@@ -138,13 +143,12 @@ void Application::Update() {
     // particles[0]->AddForce(attraction);
     // particles[1]->AddForce(-attraction);
 
-    Vec2 springForce =
-        Force::GenerateSpringForce(*particles[0], anchor, restLength, k);
-    particles[0]->AddForce(springForce);
-
-    for (int i = 1; i < NUM_PARTICLES; i++) {
-        Particle *p0 = particles[i];
-        Particle *p1 = particles[i - 1];
+    int co[][2] = {
+        {0, 1}, {1, 2}, {2, 3}, {3, 0}, {0, 2}, {1, 3},
+    };
+    for (int i = 0; i < 6; i++) {
+        Particle *p0 = particles[co[i][0]];
+        Particle *p1 = particles[co[i][1]];
         Vec2 sf = Force::GenerateSpringForce(*p0, *p1, restLength, k);
         p0->AddForce(sf);
         p1->AddForce(-sf);
@@ -177,12 +181,12 @@ void Application::Update() {
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
 
-    Graphics::DrawFillCircle(anchor.x, anchor.y, 5, 0xFF001155);
-    Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x,
-                       particles[0]->position.y, 0xFF313131);
-    for (int i = 0; i < NUM_PARTICLES - 1; i++) {
-        auto p0 = particles[i];
-        auto p1 = particles[i + 1];
+    int co[][2] = {
+        {0, 1}, {1, 2}, {2, 3}, {3, 0}, {0, 2}, {1, 3},
+    };
+    for (int i = 0; i < 6; i++) {
+        auto p0 = particles[co[i][0]];
+        auto p1 = particles[co[i][1]];
         Graphics::DrawLine(p0->position.x, p0->position.y, p1->position.x,
                            p1->position.y, 0xFF313131);
     }
