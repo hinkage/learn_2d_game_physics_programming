@@ -24,6 +24,8 @@ set(src_files
     src/Physics/Force.cpp
     src/Physics/CollisionDetection.h
     src/Physics/CollisionDetection.cpp
+    src/Physics/Contact.h
+    src/Physics/Contact.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

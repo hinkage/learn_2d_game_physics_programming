@@ -67,4 +67,76 @@ I is Moment of Inertia, which measures how much an object "resists" to change it
 
 https://en.wikipedia.org/wiki/List_of_moments_of_inertia
 
+## Collision Detection
+### Collision Contact Information
+<img src="./assets/images/collision_contact_information.png">
+
+### Broad Phase and Narrow Phase
+Collision detection is crucial in ensuring realistic interactions in simulations and games. The broad phase quickly culls non-colliding pairs, making the narrow phase, which involves detailed and computationally expensive checks, more efficient. Together, these phases ensure accurate and efficient collision detection.
+
+### Collision Response
+The collision normal is the direction in which the potential impulse should be applied.
+The penetration depth (along with some other things) will determine how big of an impulse we need to use.
+
+Projection Method
+
+The Projection method, also known as the Position Correction method, involves directly adjusting the positions of colliding objects to resolve interpenetration. This method is typically used in conjunction with other collision resolution techniques to ensure that objects do not overlap.
+
+$$\mathbf{MTV} = d \mathbf{n}$$
+$$\Delta \mathbf{r}_1 = -\frac{m_2}{m_1 + m_2} \mathbf{MTV}$$
+$$\Delta \mathbf{r}_2 = \frac{m_1}{m_1 + m_2} \mathbf{MTV}$$
+
+Minimum Translation Vector(MTV).
+
+n as the normal vector at the point of contact pointing from object 1 to object 2.
+
+d as the penetration depth.
+
+Impulse Method
+
+The Impulse method resolves collisions by applying an instantaneous change in velocity (impulse) to the colliding objects, based on the laws of conservation of momentum and energy.
+
+$$\mathbf{J} = -(1 + \epsilon) \frac{\mathbf{v}_r \cdot \mathbf{\hat{n}}}{\frac{1}{m_1} + \frac{1}{m_2}} $$
+
+J is the impulse.
+
+$\epsilon$ is the coefficient of restitution (0 for perfectly inelastic, 1 for perfectly elastic collisions).
+
+v_r  is the relative velocity.
+
+n is the collision normal.
+
+m_1 and m_2 are the masses of the colliding objects.
+
+<img src="./assets/images/derive_impluse_method.png" height="500">
+
+Penalty Method
+
+The Penalty method simulates collisions by applying a repulsive force proportional to the depth of penetration and possibly the relative velocity of the objects. This method treats interpenetration as a soft constraint.
+
+$$\mathbf{F} = -k \mathbf{d} - b \mathbf{v}$$
+
+F is the penalty force.
+
+k is the stiffness constant (spring constant).
+
+d is the penetration depth vector.
+
+b is the damping coefficient.
+
+v is the relative velocity.
+
+### Object with Infinite Mass
+```cpp
+bool Body::IsStatic() {
+    float epsilon = 0.005f;
+    return fabs(invMass - 0.0f) < epsilon;
+}
+```
+### Momentum
+Elastic Collisions
+$$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = m_1 v_{1,\text{final}} + m_2 v_{2,\text{final}}$$
+$$\frac{1}{2} m_1 v_{1,\text{initial}}^2 + \frac{1}{2} m_2 v_{2,\text{initial}}^2 = \frac{1}{2} m_1 v_{1,\text{final}}^2 + \frac{1}{2} m_2 v_{2,\text{final}}^2$$
+Inelastic Collisions
+$$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = (m_1 + m_2) v_{\text{final}}$$
 
