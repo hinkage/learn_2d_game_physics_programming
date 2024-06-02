@@ -22,6 +22,8 @@ set(src_files
     src/Physics/Constants.h
     src/Physics/Force.h
     src/Physics/Force.cpp
+    src/Physics/CollisionDetection.h
+    src/Physics/CollisionDetection.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

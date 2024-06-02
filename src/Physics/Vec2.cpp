@@ -29,7 +29,7 @@ Vec2 Vec2::Rotate(const float angle) const {
 
 float Vec2::Magnitude() const { return sqrtf(x * x + y * y); }
 
-float Vec2::MagnitudeSquared() const { return x * x + y + y; }
+float Vec2::MagnitudeSquared() const { return x * x + y * y; }
 
 Vec2 &Vec2::Normalize() {
     float length = Magnitude();
