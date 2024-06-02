@@ -41,11 +41,28 @@ bool CollisionDetection::IsCollidingPolygonPolygon(Body *a, Body *b,
                                                    Contact &contact) {
     const PolygonShape *as = static_cast<PolygonShape *>(a->shape);
     const PolygonShape *bs = static_cast<PolygonShape *>(b->shape);
-    if (as->FindMinSeparation(*bs) >= 0) {
+    Vec2 aAxis, bAxis;
+    Vec2 aPoint, bPoint;
+    float abSep = as->FindMinSeparation(*bs, aAxis, aPoint);
+    float baSep = bs->FindMinSeparation(*as, bAxis, bPoint);
+    if (abSep >= 0) {
         return false;
     }
-    if (bs->FindMinSeparation(*as) >= 0) {
+    if (baSep >= 0) {
         return false;
+    }
+    contact.a = a;
+    contact.b = b;
+    if (abSep > baSep) {
+        contact.depth = -abSep;
+        contact.normal = aAxis.Normal();
+        contact.start = aPoint;
+        contact.end = aPoint + contact.normal * contact.depth;
+    } else {
+        contact.depth = -baSep;
+        contact.normal = -bAxis.Normal();
+        contact.start = bPoint - contact.normal * contact.depth;
+        contact.end = bPoint;
     }
     return true;
 }

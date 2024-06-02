@@ -155,4 +155,14 @@ The Separating Axis Theorem (SAT) is a fundamental concept in computational geom
 
 <img src="./assets/images/SAT.png" height="400">
 
+点到edge normal的投影，就是点到edge的垂直距离。
+
+<img src="./assets/images/polygon_polygon_contact.png" height="400">
+
+当y轴指向上方时，normal的计算是顺时针旋转。但是SDL的坐标系，y轴正方向指向下方，此时normal就是逆时针旋转90度。
+
+所以a的normal是指向a外边的，如果b有一点在a内部，那么dot product就是负数。
+
+<img src="./assets/images/polygon_polygon_contact_result.png">
+
 

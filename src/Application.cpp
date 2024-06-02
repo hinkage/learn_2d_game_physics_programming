@@ -15,8 +15,9 @@ void Application::Setup() {
                         Graphics::Height() / 2.0, 1.0);
     Body *p1 = new Body(new BoxShape(200, 200), Graphics::Width() / 2.0,
                         Graphics::Height() / 2.0, 1.0);
-    p0->angularVelocity = 0.4f;
-    p1->angularVelocity = 0.1f;
+    p0->angularVelocity = 0.0f;
+    p1->angularVelocity = 0.0f;
+    p0->rotation = 45.f / 180.f * 3.14f;
     bodies.push_back(p0);
     bodies.push_back(p1);
 }

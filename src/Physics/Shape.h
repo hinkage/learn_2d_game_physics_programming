@@ -34,7 +34,8 @@ struct PolygonShape : public Shape {
     void UpdateVertices(float angle, const Vec2 &position);
 
     Vec2 EdgeAt(int index) const;
-    float FindMinSeparation(const PolygonShape &b) const;
+    float FindMinSeparation(const PolygonShape &b, Vec2 &axis,
+                            Vec2 &point) const;
 };
 
 struct BoxShape : public PolygonShape {
