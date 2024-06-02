@@ -108,7 +108,7 @@ n is the collision normal.
 
 m_1 and m_2 are the masses of the colliding objects.
 
-<img src="./assets/images/derive_impluse_method.png" height="500">
+<img src="./assets/images/derive_impluse_method.png">
 
 Penalty Method
 
@@ -164,5 +164,16 @@ The Separating Axis Theorem (SAT) is a fundamental concept in computational geom
 所以a的normal是指向a外边的，如果b有一点在a内部，那么dot product就是负数。
 
 <img src="./assets/images/polygon_polygon_contact_result.png">
+
+### Linear and Angular Impulse
+<img src="./assets/images/linear_and_angular_velocity_after_collision.png">
+<img src="./assets/images/linear_and_angular_velocity_after_collision_2.png">
+
+$\omega$ is perpendicular to 2D screen.
+
+cross($\omega$, r) = cross(Vec3(0, 0, $\omega$), Vec3(rx, ry, 0)) = Vec3(0*0-$\omega$*ry, $\omega$\*rx-0\*0, 0)
+
+<img src="./assets/images/simplification_by_triple_scalar_product_rule.png">
+<img src="./assets/images/linear_and_angular_impulse_result.png">
 
 

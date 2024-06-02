@@ -41,4 +41,5 @@ struct Body {
     // Object with infinite mass
     bool IsStatic();
     void ApplyInpulse(const Vec2 &j);
+    void ApplyInpulse(const Vec2 &j, const Vec2 &r);
 };

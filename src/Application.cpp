@@ -11,13 +11,13 @@ bool Application::IsRunning() { return running; }
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Body *p0 = new Body(new BoxShape(200, 200), Graphics::Width() / 2.0,
-                        Graphics::Height() / 2.0, 1.0);
-    Body *p1 = new Body(new BoxShape(200, 200), Graphics::Width() / 2.0,
-                        Graphics::Height() / 2.0, 1.0);
-    p0->angularVelocity = 0.0f;
-    p1->angularVelocity = 0.0f;
-    p0->rotation = 45.f / 180.f * 3.14f;
+    auto w = Graphics::Width();
+    auto h = Graphics::Height();
+    Body *p0 = new Body(new BoxShape(w - 50, 50), w / 2.0, h - 50, 0.0);
+    p0->restitution = 0.2f;
+    Body *p1 = new Body(new BoxShape(200, 200), w / 2.0, h / 2.0, 0.0);
+    p1->rotation = 1.4f;
+    p1->restitution = 0.5f;
     bodies.push_back(p0);
     bodies.push_back(p1);
 }
@@ -69,8 +69,8 @@ void Application::Input() {
         case SDL_MOUSEMOTION:
             mouseCursor.x = event.motion.x;
             mouseCursor.y = event.motion.y;
-            bodies[0]->position.x = mouseCursor.x;
-            bodies[0]->position.y = mouseCursor.y;
+            // bodies[0]->position.x = mouseCursor.x;
+            // bodies[0]->position.y = mouseCursor.y;
             break;
         case SDL_MOUSEBUTTONDOWN:
             if (event.button.button == SDL_BUTTON_LEFT) {
@@ -81,9 +81,9 @@ void Application::Input() {
                     mouseCursor.x = x;
                     mouseCursor.y = y;
                 }
-                // auto body = new Body(new CircleShape(40), x, y, 1.0);
-                // body->restitution = 0.2f;
-                // bodies.push_back(body);
+                auto body = new Body(new BoxShape(50, 50), x, y, 1.0);
+                body->restitution = 1.f;
+                bodies.push_back(body);
             }
             break;
         case SDL_MOUSEBUTTONUP:
@@ -120,8 +120,8 @@ void Application::Update() {
         // body->AddForce(friction);
 
         // F = mg
-        // Vec2 weight = Vec2(0.0f, body->mass * 9.8f * PIXELS_PER_METER);
-        // body->AddForce(weight);
+        Vec2 weight = Vec2(0.0f, body->mass * 9.8f * PIXELS_PER_METER);
+        body->AddForce(weight);
 
         // wind
         // body->AddForce(Vec2(20.f * PIXELS_PER_METER, 0.f));
@@ -139,7 +139,7 @@ void Application::Update() {
             b->isColliding = false;
             Contact contact;
             if (CollisionDetection::IsColliding(a, b, contact)) {
-                // contact.ResolveCollision();
+                contact.ResolveCollision();
 
                 Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3,
                                          0xFFFF00FF);
