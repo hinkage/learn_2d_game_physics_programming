@@ -16,7 +16,7 @@ class Application {
     Vec2 anchor = Vec2(500.0, 0.0);
     float k = 1500;
     float restLength = 200;
-    const int NUM_BODIES = 4;
+    const int NUM_BODIES = 1;
 
   public:
     Application() = default;

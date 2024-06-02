@@ -54,3 +54,17 @@ $$F_s = -k x$$
 
 Add spring force beteen 4 particles.
 
+## Angular Velocity
+$$\omega = \frac{d\theta}{dt}$$
+
+<img src="./assets/images/angular_velocity.png" height="400">
+
+## Torque Force
+$$\tau = r F \sin(\theta)$$
+Simplify it to
+$$\tau = I \alpha$$
+I is Moment of Inertia, which measures how much an object "resists" to change its angular acceleration.
+
+https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+
+
