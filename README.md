@@ -126,17 +126,33 @@ b is the damping coefficient.
 
 v is the relative velocity.
 
-### Object with Infinite Mass
+#### Object with Infinite Mass
 ```cpp
 bool Body::IsStatic() {
     float epsilon = 0.005f;
     return fabs(invMass - 0.0f) < epsilon;
 }
 ```
-### Momentum
+#### Momentum
 Elastic Collisions
 $$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = m_1 v_{1,\text{final}} + m_2 v_{2,\text{final}}$$
 $$\frac{1}{2} m_1 v_{1,\text{initial}}^2 + \frac{1}{2} m_2 v_{2,\text{initial}}^2 = \frac{1}{2} m_1 v_{1,\text{final}}^2 + \frac{1}{2} m_2 v_{2,\text{final}}^2$$
 Inelastic Collisions
 $$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = (m_1 + m_2) v_{\text{final}}$$
+
+#### Linear Collision Response
+<img src="./assets/images/linear_collision_response.png" height="350">
+
+Linear collision response focuses on updating the linear velocities of colliding bodies without considering rotational effects. This is a simplified scenario compared to full rigid body dynamics but is commonly used in many simulations where rotational effects are negligible.
+
+### Axis-Aligned Bounding Box
+<img src="./assets/images/AABB.png" height="500">
+
+### Separating Axis Theorem
+The Separating Axis Theorem (SAT) is a fundamental concept in computational geometry, particularly useful in collision detection algorithms for convex shapes. The theorem states that two convex shapes are not intersecting if and only if there exists a line (axis) along which the projections of the two shapes do not overlap.
+
+<img src="./assets/images/convex_concave.png" height="300">
+
+<img src="./assets/images/SAT.png" height="400">
+
 

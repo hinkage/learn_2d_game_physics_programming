@@ -31,7 +31,10 @@ struct PolygonShape : public Shape {
     ShapeType GetType() const override;
     float GetMomentOfInertia() const override;
     // Rotate and translate vertices from local space to world space
-    void UpdateVertices(float angle, const Vec2& position);
+    void UpdateVertices(float angle, const Vec2 &position);
+
+    Vec2 EdgeAt(int index) const;
+    float FindMinSeparation(const PolygonShape &b) const;
 };
 
 struct BoxShape : public PolygonShape {

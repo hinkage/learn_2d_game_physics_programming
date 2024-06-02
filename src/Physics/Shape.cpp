@@ -28,6 +28,30 @@ void PolygonShape::UpdateVertices(float angle, const Vec2 &position) {
     }
 }
 
+Vec2 PolygonShape::EdgeAt(int index) const {
+    int currVertex = index;
+    int nextVertex = index + 1;
+    if (nextVertex >= worldVertices.size()) {
+        nextVertex = 0;
+    }
+    return worldVertices[nextVertex] - worldVertices[currVertex];
+}
+
+float PolygonShape::FindMinSeparation(const PolygonShape &b) const {
+    float separation = std::numeric_limits<float>::lowest();
+    for (int i = 0; i < worldVertices.size(); i++) {
+        Vec2 va = worldVertices[i];
+        Vec2 normal = EdgeAt(i).Normal();
+        float minSep = std::numeric_limits<float>::max();
+        for (int j = 0; j < b.worldVertices.size(); j++) {
+            Vec2 vb = b.worldVertices[j];
+            minSep = std::min(minSep, (vb - va).Dot(normal));
+        }
+        separation = std::max(separation, minSep);
+    }
+    return separation;
+}
+
 BoxShape::BoxShape(float width, float height) : width(width), height(height) {
     localVertices.push_back(Vec2(-width / 2.0, -height / 2.0));
     localVertices.push_back(Vec2(+width / 2.0, -height / 2.0));
