@@ -9,13 +9,12 @@ bool Application::IsRunning() { return running; }
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Particle *smallBall = new Particle(50, 100, 2.0);
-    smallBall->radius = 4.0f;
-    particles.push_back(smallBall);
-
-    Particle *bigBall = new Particle(100, 100, 5.0);
-    bigBall->radius = 12.0f;
-    particles.push_back(bigBall);
+    anchor = Vec2(Graphics::Width() / 2.0, 30);
+    for (int i = 0; i < NUM_PARTICLES; i++) {
+        Particle *p = new Particle(anchor.x, anchor.y + (i * restLength), 2.0);
+        p->radius = 6;
+        particles.push_back(p);
+    }
 
     liquid.x = 0;
     liquid.y = Graphics::Height() / 2;
@@ -88,10 +87,11 @@ void Application::Input() {
         case SDL_MOUSEBUTTONUP:
             if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
                 leftMouseButtonDown = false;
-                auto f = particles[0]->position - mouseCursor;
+                auto p = particles[NUM_PARTICLES - 1];
+                auto f = p->position - mouseCursor;
                 Vec2 impulseDirection = f.UnitVector();
                 float impulseMagnitude = f.Magnitude() * 5.0f;
-                particles[0]->velocity = impulseDirection * impulseMagnitude;
+                p->velocity = impulseDirection * impulseMagnitude;
             }
         }
     }
@@ -114,19 +114,23 @@ void Application::Update() {
 
         particle->AddForce(pushForce);
 
-        Vec2 friction =
-            Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
-        particle->AddForce(friction);
+        // Vec2 friction =
+        //     Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
+        // particle->AddForce(friction);
 
         // F = mg
         Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
         particle->AddForce(weight);
 
+        // drag
+        Vec2 drag = Force::GenerateDragForce(*particle, 0.02f);
+        particle->AddForce(drag);
+
         // Inside liquid
-        if (particle->position.y >= liquid.y) {
-            Vec2 drag = Force::GenerateDragForce(*particle, 2.f);
-            particle->AddForce(drag);
-        }
+        // if (particle->position.y >= liquid.y) {
+        //     Vec2 drag = Force::GenerateDragForce(*particle, 2.f);
+        //     particle->AddForce(drag);
+        // }
     }
 
     // Vec2 attraction = Force::GenerateGravitationalForce(
@@ -137,6 +141,14 @@ void Application::Update() {
     Vec2 springForce =
         Force::GenerateSpringForce(*particles[0], anchor, restLength, k);
     particles[0]->AddForce(springForce);
+
+    for (int i = 1; i < NUM_PARTICLES; i++) {
+        Particle *p0 = particles[i];
+        Particle *p1 = particles[i - 1];
+        Vec2 sf = Force::GenerateSpringForce(*p0, *p1, restLength, k);
+        p0->AddForce(sf);
+        p1->AddForce(-sf);
+    }
 
     for (auto particle : particles) {
         particle->Integrate(deltaTime);
@@ -150,7 +162,8 @@ void Application::Update() {
                    Graphics::Width()) {
             particle->position.x = Graphics::Width() - particle->radius;
             particle->velocity.x *= -0.9f;
-        } else if (particle->position.y - particle->radius <= 0) {
+        }
+        if (particle->position.y - particle->radius <= 0) {
             particle->position.y = particle->radius;
             particle->velocity.y *= -0.9f;
         } else if (particle->position.y + particle->radius >=
@@ -167,9 +180,15 @@ void Application::Render() {
     Graphics::DrawFillCircle(anchor.x, anchor.y, 5, 0xFF001155);
     Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x,
                        particles[0]->position.y, 0xFF313131);
+    for (int i = 0; i < NUM_PARTICLES - 1; i++) {
+        auto p0 = particles[i];
+        auto p1 = particles[i + 1];
+        Graphics::DrawLine(p0->position.x, p0->position.y, p1->position.x,
+                           p1->position.y, 0xFF313131);
+    }
 
-    Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2,
-                           liquid.w, liquid.h, 0xFF6E3713);
+    // Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2,
+    //                        liquid.w, liquid.h, 0xFF6E3713);
 
     for (auto particle : particles) {
         Graphics::DrawFillCircle(particle->position.x, particle->position.y,
