@@ -9,15 +9,9 @@ bool Application::IsRunning() { return running; }
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Body *p = new Body(new CircleShape(50), Graphics::Width() / 2.0,
+    Body *p = new Body(new BoxShape(200, 100), Graphics::Width() / 2.0,
                        Graphics::Height() / 2.0, 2.0);
-    p->radius = 6;
     bodies.push_back(p);
-
-    liquid.x = 0;
-    liquid.y = Graphics::Height() / 2;
-    liquid.w = Graphics::Width();
-    liquid.h = Graphics::Height() / 2;
 }
 
 void Application::Input() {
@@ -107,9 +101,6 @@ void Application::Update() {
     timePreviousFrame = SDL_GetTicks();
 
     for (auto body : bodies) {
-        // Vec2 wind = Vec2(1.0 * PIXELS_PER_METER, 0.0 * PIXELS_PER_METER);
-        // body->AddForce(wind);
-
         body->AddForce(pushForce);
 
         // Vec2 friction =
@@ -117,26 +108,15 @@ void Application::Update() {
         // body->AddForce(friction);
 
         // F = mg
-        Vec2 weight = Vec2(0.0f, body->mass * 9.8f * PIXELS_PER_METER);
-        body->AddForce(weight);
+        // Vec2 weight = Vec2(0.0f, body->mass * 9.8f * PIXELS_PER_METER);
+        // body->AddForce(weight);
 
         float torque = 5000.f;
         body->AddTorque(torque);
-
-        // drag
-        // Vec2 drag = Force::GenerateDragForce(*body, 0.02f);
-        // body->AddForce(drag);
-
-        // Inside liquid
-        // if (body->position.y >= liquid.y) {
-        //     Vec2 drag = Force::GenerateDragForce(*body, 2.f);
-        //     body->AddForce(drag);
-        // }
     }
 
     for (auto body : bodies) {
-        body->IntegrateLinear(deltaTime);
-        body->IntegrateAngular(deltaTime);
+        body->Update(deltaTime);
     }
 
     for (auto body : bodies) {
@@ -166,11 +146,16 @@ void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
 
     for (auto body : bodies) {
-        if (body->shape->GetType() == ShapeType::CIRCLE) {
+        auto shapeType = body->shape->GetType();
+        if (shapeType == ShapeType::CIRCLE) {
             CircleShape *circleShape = static_cast<CircleShape *>(body->shape);
             Graphics::DrawCircle(body->position.x, body->position.y,
                                  circleShape->radius, body->rotation,
                                  0xFFFFFFFF);
+        } else if (shapeType == ShapeType::BOX) {
+            BoxShape *boxShape = static_cast<BoxShape *>(body->shape);
+            Graphics::DrawPolygon(body->position.x, body->position.y,
+                                  boxShape->worldVertices, 0xFFFFFFFF);
         }
     }
 

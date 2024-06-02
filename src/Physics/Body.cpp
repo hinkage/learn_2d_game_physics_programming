@@ -3,10 +3,9 @@
 #include <iostream>
 
 Body::Body(Shape *shape, float x, float y, float mass)
-    : shape(shape), position(x, y), mass(mass), radius(1.0f),
-      velocity(0.0f, 0.0f), acceleration(0.0f, 0.0f), rotation(0.f),
-      angularVelocity(0.0f), angularAcceleration(0.0f), sumForces(0.0f, 0.0f),
-      sumTorque(0.0f) {
+    : shape(shape), position(x, y), mass(mass), velocity(0.0f, 0.0f),
+      acceleration(0.0f, 0.0f), rotation(0.f), angularVelocity(0.0f),
+      angularAcceleration(0.0f), sumForces(0.0f, 0.0f), sumTorque(0.0f) {
     if (mass != 0.0f) {
         this->invMass = 1.0f / mass;
     } else {
@@ -47,4 +46,14 @@ void Body::IntegrateAngular(float dt) {
     angularVelocity += angularAcceleration * dt;
     rotation += angularVelocity * dt;
     ClearTorque();
+}
+
+void Body::Update(float dt) {
+    IntegrateLinear(dt);
+    IntegrateAngular(dt);
+    bool isPolygon = shape->GetType() == POLYGON || shape->GetType() == BOX;
+    if (isPolygon) {
+        auto shape = static_cast<PolygonShape *>(this->shape);
+        shape->UpdateVertices(rotation, position);
+    }
 }

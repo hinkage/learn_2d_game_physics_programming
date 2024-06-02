@@ -4,8 +4,6 @@
 #include "Vec2.h"
 
 struct Body {
-    int radius;
-
     // Linear motion
     Vec2 position;
     Vec2 velocity;
@@ -36,4 +34,5 @@ struct Body {
     void ClearTorque();
     void IntegrateLinear(float dt);
     void IntegrateAngular(float dt);
+    void Update(float dt);
 };
