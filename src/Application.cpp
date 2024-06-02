@@ -15,10 +15,10 @@ void Application::Setup() {
         {300, 300},
         {100, 300},
     };
-    for (int i = 0; i < NUM_PARTICLES; i++) {
-        Particle *p = new Particle(wh[i][0], wh[i][1], 2.0);
+    for (int i = 0; i < NUM_BODIES; i++) {
+        Body *p = new Body(wh[i][0], wh[i][1], 2.0);
         p->radius = 6;
-        particles.push_back(p);
+        bodies.push_back(p);
     }
 
     liquid.x = 0;
@@ -84,15 +84,15 @@ void Application::Input() {
                     mouseCursor.x = x;
                     mouseCursor.y = y;
                 }
-                // auto particle = new Particle(x, y, 1.0);
-                // particle->radius = 5.0f;
-                // particles.push_back(particle);
+                // auto bodies = new Body(x, y, 1.0);
+                // body->radius = 5.0f;
+                // body.push_back(body);
             }
             break;
         case SDL_MOUSEBUTTONUP:
             if (leftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
                 leftMouseButtonDown = false;
-                auto p = particles[NUM_PARTICLES - 1];
+                auto p = bodies[NUM_BODIES - 1];
                 auto f = p->position - mouseCursor;
                 Vec2 impulseDirection = f.UnitVector();
                 float impulseMagnitude = f.Magnitude() * 5.0f;
@@ -113,67 +113,62 @@ void Application::Update() {
     }
     timePreviousFrame = SDL_GetTicks();
 
-    for (auto particle : particles) {
+    for (auto body : bodies) {
         // Vec2 wind = Vec2(1.0 * PIXELS_PER_METER, 0.0 * PIXELS_PER_METER);
-        // particle->AddForce(wind);
+        // body->AddForce(wind);
 
-        particle->AddForce(pushForce);
+        body->AddForce(pushForce);
 
         // Vec2 friction =
-        //     Force::GenerateFrictionForce(*particle, 10 * PIXELS_PER_METER);
-        // particle->AddForce(friction);
+        //     Force::GenerateFrictionForce(*body, 10 * PIXELS_PER_METER);
+        // body->AddForce(friction);
 
         // F = mg
-        Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
-        particle->AddForce(weight);
+        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
+        body->AddForce(weight);
 
         // drag
-        Vec2 drag = Force::GenerateDragForce(*particle, 0.02f);
-        particle->AddForce(drag);
+        Vec2 drag = Force::GenerateDragForce(*body, 0.02f);
+        body->AddForce(drag);
 
         // Inside liquid
-        // if (particle->position.y >= liquid.y) {
-        //     Vec2 drag = Force::GenerateDragForce(*particle, 2.f);
-        //     particle->AddForce(drag);
+        // if (body->position.y >= liquid.y) {
+        //     Vec2 drag = Force::GenerateDragForce(*body, 2.f);
+        //     body->AddForce(drag);
         // }
     }
-
-    // Vec2 attraction = Force::GenerateGravitationalForce(
-    //     *particles[0], *particles[1], 5000.0, 5.0, 100.0);
-    // particles[0]->AddForce(attraction);
-    // particles[1]->AddForce(-attraction);
 
     int co[][2] = {
         {0, 1}, {1, 2}, {2, 3}, {3, 0}, {0, 2}, {1, 3},
     };
     for (int i = 0; i < 6; i++) {
-        Particle *p0 = particles[co[i][0]];
-        Particle *p1 = particles[co[i][1]];
+        Body *p0 = bodies[co[i][0]];
+        Body *p1 = bodies[co[i][1]];
         Vec2 sf = Force::GenerateSpringForce(*p0, *p1, restLength, k);
         p0->AddForce(sf);
         p1->AddForce(-sf);
     }
 
-    for (auto particle : particles) {
-        particle->Integrate(deltaTime);
+    for (auto body : bodies) {
+        body->Integrate(deltaTime);
     }
 
-    for (auto particle : particles) {
-        if (particle->position.x - particle->radius <= 0) {
-            particle->position.x = particle->radius;
-            particle->velocity.x *= -0.9f;
-        } else if (particle->position.x + particle->radius >=
+    for (auto body : bodies) {
+        if (body->position.x - body->radius <= 0) {
+            body->position.x = body->radius;
+            body->velocity.x *= -0.9f;
+        } else if (body->position.x + body->radius >=
                    Graphics::Width()) {
-            particle->position.x = Graphics::Width() - particle->radius;
-            particle->velocity.x *= -0.9f;
+            body->position.x = Graphics::Width() - body->radius;
+            body->velocity.x *= -0.9f;
         }
-        if (particle->position.y - particle->radius <= 0) {
-            particle->position.y = particle->radius;
-            particle->velocity.y *= -0.9f;
-        } else if (particle->position.y + particle->radius >=
+        if (body->position.y - body->radius <= 0) {
+            body->position.y = body->radius;
+            body->velocity.y *= -0.9f;
+        } else if (body->position.y + body->radius >=
                    Graphics::Height()) {
-            particle->position.y = Graphics::Height() - particle->radius;
-            particle->velocity.y *= -0.9f;
+            body->position.y = Graphics::Height() - body->radius;
+            body->velocity.y *= -0.9f;
         }
     }
 }
@@ -185,8 +180,8 @@ void Application::Render() {
         {0, 1}, {1, 2}, {2, 3}, {3, 0}, {0, 2}, {1, 3},
     };
     for (int i = 0; i < 6; i++) {
-        auto p0 = particles[co[i][0]];
-        auto p1 = particles[co[i][1]];
+        auto p0 = bodies[co[i][0]];
+        auto p1 = bodies[co[i][1]];
         Graphics::DrawLine(p0->position.x, p0->position.y, p1->position.x,
                            p1->position.y, 0xFF313131);
     }
@@ -194,16 +189,16 @@ void Application::Render() {
     // Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2,
     //                        liquid.w, liquid.h, 0xFF6E3713);
 
-    for (auto particle : particles) {
-        Graphics::DrawFillCircle(particle->position.x, particle->position.y,
-                                 particle->radius, 0xFFFFFFFF);
+    for (auto body : bodies) {
+        Graphics::DrawFillCircle(body->position.x, body->position.y,
+                                 body->radius, 0xFFFFFFFF);
     }
     Graphics::RenderFrame();
 }
 
 void Application::Destroy() {
-    for (auto particle : particles) {
-        delete particle;
+    for (auto body : bodies) {
+        delete body;
     }
     Graphics::CloseWindow();
 }

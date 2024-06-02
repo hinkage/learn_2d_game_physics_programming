@@ -15,8 +15,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/x64")
 set(src_files
     src/Physics/Vec2.h
     src/Physics/Vec2.cpp
-    src/Physics/Particle.h
-    src/Physics/Particle.cpp
+    src/Physics/Body.h
+    src/Physics/Body.cpp
     src/Physics/Constants.h
     src/Physics/Force.h
     src/Physics/Force.cpp

@@ -49,3 +49,8 @@ $$F_g = G \frac{m_1 m_2}{r^2}$$
 ## Spring Force
 $$F_s = -k x$$
 
+## Simulating Soft Body
+<img src="./assets/images/simulating_soft_body.png">
+
+Add spring force beteen 4 particles.
+
