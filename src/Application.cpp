@@ -13,12 +13,20 @@ void Application::Setup() {
 
     auto w = Graphics::Width();
     auto h = Graphics::Height();
-    Body *p0 = new Body(new BoxShape(w - 50, 50), w / 2.0, h - 50, 0.0);
-    p0->restitution = 0.2f;
-    Body *p1 = new Body(new BoxShape(200, 200), w / 2.0, h / 2.0, 0.0);
+    Body *floor = new Body(new BoxShape(w - 50, 50), w / 2.0, h - 50, 0.0);
+    Body *leftWall = new Body(new BoxShape(50, h - 100), 50, h / 2.0 - 25, 0.0);
+    Body *rightWall =
+        new Body(new BoxShape(50, h - 100), w - 50, h / 2.0 - 25, 0.0);
+    floor->restitution = 0.2f;
+    leftWall->restitution = 0.2f;
+    rightWall->restitution = 0.2f;
+    bodies.push_back(floor);
+    bodies.push_back(leftWall);
+    bodies.push_back(rightWall);
+
+    Body *p1 = new Body(new CircleShape(200), w / 2.0, h / 2.0, 0.0);
     p1->rotation = 1.4f;
     p1->restitution = 0.5f;
-    bodies.push_back(p0);
     bodies.push_back(p1);
 }
 
@@ -81,7 +89,7 @@ void Application::Input() {
                     mouseCursor.x = x;
                     mouseCursor.y = y;
                 }
-                auto body = new Body(new BoxShape(50, 50), x, y, 1.0);
+                auto body = new Body(new CircleShape(50), x, y, 1.0);
                 body->restitution = 1.f;
                 bodies.push_back(body);
             }

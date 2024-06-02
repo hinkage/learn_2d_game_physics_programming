@@ -24,17 +24,26 @@ void Contact::ResolveCollision() {
     Vec2 vrel = va - vb;
 
     float vrelDotN = vrel.Dot(normal);
-
     float raCN = ra.Cross(normal);
     float rbCN = rb.Cross(normal);
-    float impulseMagnitude =
+    float impulseMagnitudeN =
         -(1 + e) * vrelDotN /
         ((a->invMass + b->invMass) + (raCN * raCN * a->invI) +
          (rbCN * rbCN * b->invI));
+    Vec2 jN = normal * impulseMagnitudeN;
 
-    Vec2 impulseDirection = normal;
-    Vec2 jn = impulseDirection * impulseMagnitude;
+    Vec2 tangent = normal.Normal();
+    float vrelDotT = vrel.Dot(tangent);
+    float raCT = ra.Cross(tangent);
+    float rbCT = rb.Cross(tangent);
+    float impulseMagnitudeT =
+        -(1 + e) * vrelDotT /
+        ((a->invMass + b->invMass) + (raCT * raCT * a->invI) +
+         (rbCT * rbCT * b->invI));
+    Vec2 jT = tangent * impulseMagnitudeT;
 
-    a->ApplyInpulse(jn, ra);
-    b->ApplyInpulse(-jn, rb);
+    Vec2 j = jN + jT;
+
+    a->ApplyInpulse(j, ra);
+    b->ApplyInpulse(-j, rb);
 }

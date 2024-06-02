@@ -7,7 +7,7 @@ Body::Body(Shape *shape, float x, float y, float mass)
     : shape(shape), position(x, y), mass(mass), velocity(0.0f, 0.0f),
       acceleration(0.0f, 0.0f), rotation(0.f), angularVelocity(0.0f),
       angularAcceleration(0.0f), sumForces(0.0f, 0.0f), sumTorque(0.0f),
-      restitution(1.f) {
+      restitution(1.f), friction(0.7f) {
     if (mass != 0.0f) {
         this->invMass = 1.0f / mass;
     } else {
