@@ -26,6 +26,8 @@ set(src_files
     src/Physics/CollisionDetection.cpp
     src/Physics/Contact.h
     src/Physics/Contact.cpp
+    src/Physics/Geometry.h
+    src/Physics/Geometry.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

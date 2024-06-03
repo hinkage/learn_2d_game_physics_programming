@@ -13,13 +13,22 @@ float CircleShape::GetMomentOfInertia() const {
     return (1.0f / 2.0f) * (radius * radius);
 }
 
-PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {}
+PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
+    for (int i = 0; i < vertices.size(); i++) {
+        auto &vertex = vertices[i];
+        localVertices.push_back(vertex);
+        worldVertices.push_back(vertex);
+    }
+    std::cout << "PolygonShape constructor" << std::endl;
+}
 
-PolygonShape::~PolygonShape() {}
+PolygonShape::~PolygonShape() {
+    std::cout << "PolygonShape destructor" << std::endl;
+}
 
 ShapeType PolygonShape::GetType() const { return ShapeType::POLYGON; }
 
-float PolygonShape::GetMomentOfInertia() const { return 1.0; }
+float PolygonShape::GetMomentOfInertia() const { return 5000.0; }
 
 void PolygonShape::UpdateVertices(float angle, const Vec2 &position) {
     for (int i = 0; i < localVertices.size(); i++) {

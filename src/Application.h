@@ -6,6 +6,7 @@
 
 class Application {
   private:
+    bool debug = false;
     bool running = false;
     int timePreviousFrame = 0;
     std::vector<Body *> bodies;

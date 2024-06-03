@@ -174,6 +174,9 @@ $\omega$ is perpendicular to 2D screen.
 cross($\omega$, r) = cross(Vec3(0, 0, $\omega$), Vec3(rx, ry, 0)) = Vec3(0*0-$\omega$*ry, $\omega$\*rx-0\*0, 0)
 
 <img src="./assets/images/simplification_by_triple_scalar_product_rule.png">
+
 <img src="./assets/images/linear_and_angular_impulse_result.png">
+
+<img src="./assets/images/multiple_vertices_polygon.png">
 
 
