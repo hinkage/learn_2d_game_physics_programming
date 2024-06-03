@@ -25,17 +25,21 @@ VecN Constraint::GetVelocities() const {
     v[5] = b->angularVelocity;
     return v;
 }
-JointConstraint::JointConstraint() : Constraint(), jacobian(1, 6) {}
+JointConstraint::JointConstraint()
+    : Constraint(), jacobian(1, 6), cachedLambda(1) {
+    cachedLambda.Zero();
+}
 
 JointConstraint::JointConstraint(Body *a, Body *b, const Vec2 &anchorPoint)
-    : Constraint(), jacobian(1, 6) {
+    : Constraint(), jacobian(1, 6), cachedLambda(1) {
+    cachedLambda.Zero();
     this->a = a;
     this->b = b;
     this->aPoint = a->WorldSpaceToLocalSpace(anchorPoint);
     this->bPoint = b->WorldSpaceToLocalSpace(anchorPoint);
 }
 
-void JointConstraint::Solve() {
+void JointConstraint::PreSolve() {
     Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
     Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
     Vec2 ra = pa - a->position;
@@ -57,6 +61,16 @@ void JointConstraint::Solve() {
     float J4 = rb.Cross(pb - pa) * 2.f;
     jacobian.rows[0][5] = J4;
 
+    // Warm Start (apply cached lambda)
+    MatMN Jt = jacobian.Transpose();
+    VecN impulse = Jt * cachedLambda;
+    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyInpulseAngular(impulse[2]);
+    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyInpulseAngular(impulse[5]);
+}
+
+void JointConstraint::Solve() {
     VecN V = GetVelocities();
     MatMN invM = GetInvM();
 
@@ -67,6 +81,7 @@ void JointConstraint::Solve() {
     MatMN A = J * invM * Jt;
     VecN vb = J * V * -1.f;
     VecN lambda = MatMN::SolveGaussSeidel(A, vb);
+    cachedLambda += lambda;
 
     VecN impulse = Jt * lambda;
     a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
@@ -74,3 +89,5 @@ void JointConstraint::Solve() {
     b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
     b->ApplyInpulseAngular(impulse[5]);
 }
+
+void JointConstraint::PostSolve() {}

@@ -240,4 +240,6 @@ https://mathinsight.org/scalar_triple_product
 ### Ax=B
 Gauss-Seidel Method
 
+### Warm Start
+Warm Start refers to the practice of using the results (specifically, the constraint impulses or forces) from the previous simulation step as an initial guess for the current simulation step's constraint solver. This approach leverages the temporal coherence of physical simulations, where the state of the system typically changes only slightly between consecutive steps.
 

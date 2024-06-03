@@ -50,8 +50,11 @@ void World::Update(float dt, bool debug) {
     }
 
     // Solve all constraints
+    for (auto constraint : constraints) {
+        constraint->PreSolve();
+    }
     // Solve system of constraints iteratively
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 5; i++) {
         for (auto constraint : constraints) {
             constraint->Solve();
         }
