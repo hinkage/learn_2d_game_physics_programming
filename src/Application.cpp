@@ -18,21 +18,53 @@ void Application::Setup() {
     auto w = Graphics::Width();
     auto h = Graphics::Height();
 
-    const int NUM_BODIES = 8;
-    for (int i = 0; i < NUM_BODIES; i++) {
-        float mass = (i == 0) ? 0.f : 1.f;
-        Body *body =
-            new Body(new BoxShape(30, 30), w / 2.f - (i * 40), 100, mass);
-        body->SetTexture("./assets/crate.png");
-        world->AddBody(body);
-    }
+    Body *bob = new Body(new CircleShape(5), Graphics::Width() / 2.0,
+                         Graphics::Height() / 2.0 - 200, 0.0);
+    Body *head = new Body(new CircleShape(25), bob->position.x,
+                          bob->position.y + 70, 5.0);
+    Body *torso = new Body(new BoxShape(50, 100), head->position.x,
+                           head->position.y + 80, 3.0);
+    Body *leftArm = new Body(new BoxShape(15, 70), torso->position.x - 32,
+                             torso->position.y - 10, 1.0);
+    Body *rightArm = new Body(new BoxShape(15, 70), torso->position.x + 32,
+                              torso->position.y - 10, 1.0);
+    Body *leftLeg = new Body(new BoxShape(20, 90), torso->position.x - 20,
+                             torso->position.y + 97, 1.0);
+    Body *rightLeg = new Body(new BoxShape(20, 90), torso->position.x + 20,
+                              torso->position.y + 97, 1.0);
+    bob->SetTexture("./assets/ragdoll/bob.png");
+    head->SetTexture("./assets/ragdoll/head.png");
+    torso->SetTexture("./assets/ragdoll/torso.png");
+    leftArm->SetTexture("./assets/ragdoll/leftArm.png");
+    rightArm->SetTexture("./assets/ragdoll/rightArm.png");
+    leftLeg->SetTexture("./assets/ragdoll/leftLeg.png");
+    rightLeg->SetTexture("./assets/ragdoll/rightLeg.png");
 
-    for (int i = 0; i < NUM_BODIES - 1; i++) {
-        Body *a = world->GetBodies()[i];
-        Body *b = world->GetBodies()[i + 1];
-        JointConstraint *joint = new JointConstraint(a, b, a->position);
-        world->AddConstraint(joint);
-    }
+    world->AddBody(bob);
+    world->AddBody(head);
+    world->AddBody(torso);
+    world->AddBody(leftArm);
+    world->AddBody(rightArm);
+    world->AddBody(leftLeg);
+    world->AddBody(rightLeg);
+
+    JointConstraint *string = new JointConstraint(bob, head, bob->position);
+    JointConstraint *neck =
+        new JointConstraint(head, torso, head->position + Vec2(0, 25));
+    JointConstraint *leftShoulder =
+        new JointConstraint(torso, leftArm, torso->position + Vec2(-28, -45));
+    JointConstraint *rightShoulder =
+        new JointConstraint(torso, rightArm, torso->position + Vec2(+28, -45));
+    JointConstraint *leftHip =
+        new JointConstraint(torso, leftLeg, torso->position + Vec2(-20, +50));
+    JointConstraint *rightHip =
+        new JointConstraint(torso, rightLeg, torso->position + Vec2(+20, +50));
+    world->AddConstraint(string);
+    world->AddConstraint(neck);
+    world->AddConstraint(leftShoulder);
+    world->AddConstraint(rightShoulder);
+    world->AddConstraint(leftHip);
+    world->AddConstraint(rightHip);
 
     // world->AddForce(Vec2(1.f * PIXELS_PER_METER, 0.f));
 }
@@ -84,12 +116,17 @@ void Application::Input() {
             }
             break;
         }
-        case SDL_MOUSEMOTION:
+        case SDL_MOUSEMOTION: {
             mouseCursor.x = event.motion.x;
             mouseCursor.y = event.motion.y;
-            // bodies[1]->position.x = mouseCursor.x;
-            // bodies[1]->position.y = mouseCursor.y;
+            auto bob = world->GetBodies()[0];
+            Vec2 direction =
+                (Vec2(mouseCursor.x, mouseCursor.y) - bob->position)
+                    .Normalize();
+            float speed = 1.f;
+            bob->position += direction * speed;
             break;
+        }
         case SDL_MOUSEBUTTONDOWN:
             int x, y;
             SDL_GetMouseState(&x, &y);
@@ -142,10 +179,17 @@ void Application::Update() {
 }
 
 void Application::Render() {
+    Body *bob = world->GetBodies()[0];
+    Body *head = world->GetBodies()[1];
+    Graphics::DrawLine(bob->position.x, bob->position.y, head->position.x,
+                       head->position.y, 0xFF555555);
+
+    // Draw all joints anchor points
     for (auto joint : world->GetConstraints()) {
-        const Vec2 pa = joint->a->LocalSpaceToWorldSpace(joint->aPoint);
-        const Vec2 pb = joint->b->LocalSpaceToWorldSpace(joint->aPoint);
-        Graphics::DrawLine(pa.x, pa.y, pb.x, pb.y, 0xFF5555FF);
+        if (debug) {
+            const Vec2 anchor = joint->a->LocalSpaceToWorldSpace(joint->aPoint);
+            Graphics::DrawFillCircle(anchor.x, anchor.y, 3, 0xFF0000FF);
+        }
     }
 
     for (auto body : world->GetBodies()) {
