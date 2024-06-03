@@ -37,30 +37,27 @@ void Body::ClearForce() { sumForces = Vec2(0.0f, 0.0f); }
 
 void Body::ClearTorque() { sumTorque = 0; }
 
-void Body::IntegrateLinear(float dt) {
+void Body::IntegrateForces(const float dt) {
     if (IsStatic()) {
         return;
     }
     acceleration = sumForces * invMass;
     // Implicit Euler
     velocity += acceleration * dt;
-    position += velocity * dt;
-    ClearForce();
-}
 
-void Body::IntegrateAngular(float dt) {
-    if (IsStatic()) {
-        return;
-    }
     angularAcceleration = sumTorque * invI;
     angularVelocity += angularAcceleration * dt;
-    rotation += angularVelocity * dt;
+
+    ClearForce();
     ClearTorque();
 }
 
-void Body::Update(float dt) {
-    IntegrateLinear(dt);
-    IntegrateAngular(dt);
+void Body::IntegrateVelocities(const float dt) {
+    if (IsStatic()) {
+        return;
+    }
+    position += velocity * dt;
+    rotation += angularVelocity * dt;
     shape->UpdateVertices(rotation, position);
 }
 
@@ -69,14 +66,21 @@ bool Body::IsStatic() {
     return fabs(invMass - 0.0f) < epsilon;
 }
 
-void Body::ApplyInpulse(const Vec2 &j) {
+void Body::ApplyInpulseLinear(const Vec2 &j) {
     if (IsStatic()) {
         return;
     }
     velocity += j * invMass;
 }
 
-void Body::ApplyInpulse(const Vec2 &j, const Vec2 &r) {
+void Body::ApplyInpulseAngular(const float j) {
+    if (IsStatic()) {
+        return;
+    }
+    angularVelocity += j * invI;
+}
+
+void Body::ApplyInpulseAtPoint(const Vec2 &j, const Vec2 &r) {
     if (IsStatic()) {
         return;
     }
@@ -90,4 +94,17 @@ void Body::SetTexture(const char *textureFileName) {
         texture = SDL_CreateTextureFromSurface(Graphics::renderer, surface);
         SDL_FreeSurface(surface);
     }
+}
+
+Vec2 Body::LocalSpaceToWorldSpace(const Vec2 &point) const {
+    Vec2 rotated = point.Rotate(rotation);
+    return rotated + position;
+}
+
+Vec2 Body::WorldSpaceToLocalSpace(const Vec2 &point) const {
+    float localX = point.x - position.x;
+    float localY = point.y - position.y;
+    float x = cos(-rotation) * localX - sin(-rotation) * localY;
+    float y = sin(-rotation) * localX + cos(-rotation) * localY;
+    return Vec2(x, y);
 }

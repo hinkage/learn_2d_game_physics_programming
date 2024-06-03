@@ -1,5 +1,6 @@
+Learn course from:
 
-学习pikuma的课程：2D Game Physics Programming。
+https://pikuma.com/courses/game-physics-engine-programming
 
 ## Proof of Rotation Matrix
 <img src="./assets/images/proof_rotation_matrix.png" height="450">
@@ -179,8 +180,64 @@ cross($\omega$, r) = cross(Vec3(0, 0, $\omega$), Vec3(rx, ry, 0)) = Vec3(0*0-$\o
 
 <img src="./assets/images/multiple_vertices_polygon.png">
 
-### Local Solvers
+### Local Solvers and Global Solvers
 Local solvers focus on solving collision response for specific parts or segments of a system. They are particularly useful for handling smaller, isolated interactions and are often more efficient for real-time applications.
 
 Global solvers aim to find a solution that considers the entire system as a whole. They are more comprehensive and can handle complex interactions across the entire system but are often more computationally intensive. 
+
+## Constrained Rigid-Body Physics
+Join constraints.
+
+Non-penetration constraints.
+
+Constraints are rules the must be satisfied.
+
+Constraints remove "degrees of freedom".
+
+### Floor Collision Velocity Constraint
+$$v_y=-\frac{\beta}{dt}*c$$
+
+Baumgarte stabilization factor.
+
+### Constraint Force
+Since the external forces acting on our system are known (weight, wind, drag, etc.),
+the question now is how to calculate the **internal force** required to keep the
+constraint valid, regardless of the external forces that are applied.
+
+Let's say we know the function that gives an object's **position over time**.
+(this can be a circular path, or a curve path, etc.)
+
+We are insterested in how this constraint **changes over time**.
+
+### Impulse VS Force Based Constraints
+
+<img src="./assets/images/impulse_force_constraints.png" height="400">
+
+### Generalized Velocity-Based Constraint
+
+<img src="./assets/images/velocity_based_constraints.png" height="400">
+
+<img src="./assets/images/Jacobian.png" height="400">
+
+<img src="./assets/images/Jacobian2.png" height="400">
+
+The Jacobian matrix is a fundamental concept in vector calculus, particularly useful in the context of multivariable functions. It is used to describe the rate of change of a vector-valued function with respect to its variables. In simpler terms, the Jacobian matrix generalizes the concept of a derivative for multivariable functions.
+
+### Deriving the Distance Jacobian
+
+https://math.stackexchange.com/questions/2207608/proof-for-derivative-of-dot-product
+
+https://proofwiki.org/wiki/Derivative_of_Dot_Product_of_Vector-Valued_Functions
+
+<img src="./assets/images/derivation_of_dot_product.png" height="600">
+
+<img src="./assets/images/distance_Jacobian.png" height="500">
+
+https://mathinsight.org/scalar_triple_product
+
+<img src="./assets/images/distance_Jacobian2.png" height="550">
+
+### Ax=B
+Gauss-Seidel Method
+
 

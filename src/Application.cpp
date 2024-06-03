@@ -4,6 +4,7 @@
 #include "./Physics/Contact.h"
 #include "./Physics/Force.h"
 #include "./Physics/Geometry.h"
+#include "Physics/Constraint.h"
 #include <SDL_mouse.h>
 #include <SDL_timer.h>
 
@@ -16,27 +17,14 @@ void Application::Setup() {
 
     auto w = Graphics::Width();
     auto h = Graphics::Height();
-    Body *floor = new Body(new BoxShape(w - 50, 50), w / 2.0, h - 50, 0.0);
-    Body *leftWall = new Body(new BoxShape(50, h - 100), 50, h / 2.0 - 25, 0.0);
-    Body *rightWall =
-        new Body(new BoxShape(50, h - 100), w - 50, h / 2.0 - 25, 0.0);
-    floor->restitution = 0.5f;
-    leftWall->restitution = 0.5f;
-    rightWall->restitution = 0.5f;
-    world->AddBody(floor);
-    world->AddBody(leftWall);
-    world->AddBody(rightWall);
 
-    Body *bigBox = new Body(new BoxShape(200, 200), w / 2.0, h / 2.0, 0.0);
-    bigBox->SetTexture("./assets/crate.png");
-    bigBox->rotation = 1.4f;
-    bigBox->restitution = 1.f;
-    world->AddBody(bigBox);
+    Body *a = new Body(new CircleShape(30), w / 2.f, h / 2.f, 0.f);
+    Body *b = new Body(new CircleShape(20), w / 2.f - 100, h / 2.f, 1.f);
+    world->AddBody(a);
+    world->AddBody(b);
 
-    Body *p2 = new Body(new CircleShape(50), w / 2.0, h / 2.0, 1.0);
-    p2->rotation = 1.4f;
-    p2->restitution = 0.5f;
-    world->AddBody(p2);
+    JointConstraint* joint = new JointConstraint(a, b, a->position);
+    world->AddConstraint(joint);
 
     // world->AddForce(Vec2(1.f * PIXELS_PER_METER, 0.f));
 }

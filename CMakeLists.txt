@@ -30,6 +30,12 @@ set(src_files
     src/Physics/Geometry.cpp
     src/Physics/World.h
     src/Physics/World.cpp
+    src/Physics/VecN.h
+    src/Physics/VecN.cpp
+    src/Physics/MatMN.h
+    src/Physics/MatMN.cpp
+    src/Physics/Constraint.h
+    src/Physics/Constraint.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

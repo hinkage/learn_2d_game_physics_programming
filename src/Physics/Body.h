@@ -41,11 +41,16 @@ struct Body {
     void ClearTorque();
     void IntegrateLinear(float dt);
     void IntegrateAngular(float dt);
-    void Update(float dt);
+    void IntegrateForces(const float dt);
+    void IntegrateVelocities(const float dt);
     // Object with infinite mass
     bool IsStatic();
-    void ApplyInpulse(const Vec2 &j);
-    void ApplyInpulse(const Vec2 &j, const Vec2 &r);
+    void ApplyInpulseLinear(const Vec2 &j);
+    void ApplyInpulseAngular(const float j);
+    void ApplyInpulseAtPoint(const Vec2 &j, const Vec2 &r);
 
     void SetTexture(const char *textureFileName);
+
+    Vec2 LocalSpaceToWorldSpace(const Vec2 &point) const;
+    Vec2 WorldSpaceToLocalSpace(const Vec2 &point) const;
 };

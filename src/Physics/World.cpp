@@ -20,6 +20,12 @@ void World::AddBody(Body *body) { bodies.push_back(body); }
 
 std::vector<Body *> &World::GetBodies() { return bodies; }
 
+void World::AddConstraint(Constraint *constraint) {
+    constraints.push_back(constraint);
+}
+
+std::vector<Constraint *> &World::GetConstraints() { return constraints; }
+
 void World::AddForce(const Vec2 &force) { forces.push_back(force); }
 
 void World::AddTorque(float torque) { torques.push_back(torque); }
@@ -38,14 +44,20 @@ void World::Update(float dt, bool debug) {
         }
     }
 
+    // Integrate all the forces
     for (auto body : bodies) {
-        body->Update(dt);
+        body->IntegrateForces(dt);
     }
 
-    // A naive iterative positional correction
-    for (int n = 0; n < 10; n++) {
-        CheckCollisions(debug);
+    for (auto constraint : constraints) {
+        constraint->Solve();
     }
+
+    for (auto body : bodies) {
+        body->IntegrateVelocities(dt);
+    }
+
+    CheckCollisions(debug);
 }
 
 void World::CheckCollisions(bool debug) {
