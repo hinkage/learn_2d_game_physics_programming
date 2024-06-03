@@ -8,6 +8,9 @@ void Contact::ResolvePenetration() {
     float db = depth / (a->invMass + b->invMass) * b->invMass;
     a->position -= normal * da;
     b->position += normal * db;
+
+    a->shape->UpdateVertices(a->rotation, a->position);
+    b->shape->UpdateVertices(b->rotation, b->position);
 }
 
 void Contact::ResolveCollision() {

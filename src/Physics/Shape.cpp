@@ -9,6 +9,8 @@ CircleShape::~CircleShape() { std::cout << "Circle destructor" << std::endl; }
 
 ShapeType CircleShape::GetType() const { return ShapeType::CIRCLE; }
 
+void CircleShape::UpdateVertices(float angle, const Vec2 &position) {}
+
 float CircleShape::GetMomentOfInertia() const {
     return (1.0f / 2.0f) * (radius * radius);
 }

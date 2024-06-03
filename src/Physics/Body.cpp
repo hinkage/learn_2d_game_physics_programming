@@ -61,11 +61,7 @@ void Body::IntegrateAngular(float dt) {
 void Body::Update(float dt) {
     IntegrateLinear(dt);
     IntegrateAngular(dt);
-    bool isPolygon = shape->GetType() == POLYGON || shape->GetType() == BOX;
-    if (isPolygon) {
-        auto shape = static_cast<PolygonShape *>(this->shape);
-        shape->UpdateVertices(rotation, position);
-    }
+    shape->UpdateVertices(rotation, position);
 }
 
 bool Body::IsStatic() {
