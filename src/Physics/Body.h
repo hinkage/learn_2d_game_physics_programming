@@ -2,6 +2,8 @@
 
 #include "Shape.h"
 #include "Vec2.h"
+#include <SDL_image.h>
+#include <SDL_render.h>
 
 struct Body {
     bool isColliding = false;
@@ -28,6 +30,7 @@ struct Body {
     float friction;
 
     Shape *shape = nullptr;
+    SDL_Texture *texture = nullptr;
 
     Body(Shape *shape, float x, float y, float mass);
     ~Body();
@@ -43,4 +46,6 @@ struct Body {
     bool IsStatic();
     void ApplyInpulse(const Vec2 &j);
     void ApplyInpulse(const Vec2 &j, const Vec2 &r);
+
+    void SetTexture(const char *textureFileName);
 };

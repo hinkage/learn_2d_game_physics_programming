@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "../Graphics.h"
 #include "Vec2.h"
 #include <cmath>
 #include <iostream>
@@ -23,8 +24,9 @@ Body::Body(Shape *shape, float x, float y, float mass)
 }
 
 Body::~Body() {
-    std::cout << "Body destructor" << std::endl;
     delete shape;
+    SDL_DestroyTexture(texture);
+    std::cout << "Body destructor" << std::endl;
 }
 
 void Body::AddForce(const Vec2 &force) { sumForces += force; }
@@ -84,4 +86,12 @@ void Body::ApplyInpulse(const Vec2 &j, const Vec2 &r) {
     }
     velocity += j * invMass;
     angularVelocity += r.Cross(j) * invI;
+}
+
+void Body::SetTexture(const char *textureFileName) {
+    SDL_Surface *surface = IMG_Load(textureFileName);
+    if (surface) {
+        texture = SDL_CreateTextureFromSurface(Graphics::renderer, surface);
+        SDL_FreeSurface(surface);
+    }
 }
