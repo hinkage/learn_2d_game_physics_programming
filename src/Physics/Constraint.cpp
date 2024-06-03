@@ -26,12 +26,12 @@ VecN Constraint::GetVelocities() const {
     return v;
 }
 JointConstraint::JointConstraint()
-    : Constraint(), jacobian(1, 6), cachedLambda(1) {
+    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
     cachedLambda.Zero();
 }
 
 JointConstraint::JointConstraint(Body *a, Body *b, const Vec2 &anchorPoint)
-    : Constraint(), jacobian(1, 6), cachedLambda(1) {
+    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
     cachedLambda.Zero();
     this->a = a;
     this->b = b;
@@ -39,7 +39,7 @@ JointConstraint::JointConstraint(Body *a, Body *b, const Vec2 &anchorPoint)
     this->bPoint = b->WorldSpaceToLocalSpace(anchorPoint);
 }
 
-void JointConstraint::PreSolve() {
+void JointConstraint::PreSolve(const float dt) {
     Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
     Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
     Vec2 ra = pa - a->position;
@@ -68,6 +68,13 @@ void JointConstraint::PreSolve() {
     a->ApplyInpulseAngular(impulse[2]);
     b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
     b->ApplyInpulseAngular(impulse[5]);
+
+    // Compute the bias term (baumgarte stabilization)
+    const float beta = 0.1f;
+    auto ab = pb - pa;
+    float C = ab.Dot(ab);
+    C = std::max(0.f, C - 0.01f);
+    bias = (beta / dt) * C;
 }
 
 void JointConstraint::Solve() {
@@ -80,6 +87,8 @@ void JointConstraint::Solve() {
     // Ax = b
     MatMN A = J * invM * Jt;
     VecN vb = J * V * -1.f;
+    vb[0] -= bias;
+
     VecN lambda = MatMN::SolveGaussSeidel(A, vb);
     cachedLambda += lambda;
 
