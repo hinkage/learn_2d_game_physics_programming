@@ -28,6 +28,8 @@ set(src_files
     src/Physics/Contact.cpp
     src/Physics/Geometry.h
     src/Physics/Geometry.cpp
+    src/Physics/World.h
+    src/Physics/World.cpp
     src/Graphics.h
     src/Graphics.cpp
     src/Application.h

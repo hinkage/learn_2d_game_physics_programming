@@ -2,14 +2,15 @@
 
 #include "./Graphics.h"
 #include "Physics/Body.h"
+#include "Physics/World.h"
 #include <vector>
 
 class Application {
   private:
     bool debug = false;
     bool running = false;
+    World *world;
     int timePreviousFrame = 0;
-    std::vector<Body *> bodies;
     Vec2 pushForce = Vec2(0.0, 0.0);
 
     SDL_Rect liquid;
