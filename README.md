@@ -179,4 +179,8 @@ cross($\omega$, r) = cross(Vec3(0, 0, $\omega$), Vec3(rx, ry, 0)) = Vec3(0*0-$\o
 
 <img src="./assets/images/multiple_vertices_polygon.png">
 
+### Local Solvers
+Local solvers focus on solving collision response for specific parts or segments of a system. They are particularly useful for handling smaller, isolated interactions and are often more efficient for real-time applications.
+
+Global solvers aim to find a solution that considers the entire system as a whole. They are more comprehensive and can handle complex interactions across the entire system but are often more computationally intensive. 
 

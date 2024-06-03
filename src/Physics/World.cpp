@@ -42,7 +42,10 @@ void World::Update(float dt, bool debug) {
         body->Update(dt);
     }
 
-    CheckCollisions(debug);
+    // A naive iterative positional correction
+    for (int n = 0; n < 10; n++) {
+        CheckCollisions(debug);
+    }
 }
 
 void World::CheckCollisions(bool debug) {

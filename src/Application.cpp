@@ -38,7 +38,7 @@ void Application::Setup() {
     p2->restitution = 0.5f;
     world->AddBody(p2);
 
-    world->AddForce(Vec2(1.f * PIXELS_PER_METER, 0.f));
+    // world->AddForce(Vec2(1.f * PIXELS_PER_METER, 0.f));
 }
 
 void Application::Input() {
