@@ -18,13 +18,21 @@ void Application::Setup() {
     auto w = Graphics::Width();
     auto h = Graphics::Height();
 
-    Body *a = new Body(new CircleShape(30), w / 2.f, h / 2.f, 0.f);
-    Body *b = new Body(new CircleShape(20), w / 2.f - 100, h / 2.f, 1.f);
-    world->AddBody(a);
-    world->AddBody(b);
+    const int NUM_BODIES = 8;
+    for (int i = 0; i < NUM_BODIES; i++) {
+        float mass = (i == 0) ? 0.f : 1.f;
+        Body *body =
+            new Body(new BoxShape(30, 30), w / 2.f - (i * 40), 100, mass);
+        body->SetTexture("./assets/crate.png");
+        world->AddBody(body);
+    }
 
-    JointConstraint* joint = new JointConstraint(a, b, a->position);
-    world->AddConstraint(joint);
+    for (int i = 0; i < NUM_BODIES - 1; i++) {
+        Body *a = world->GetBodies()[i];
+        Body *b = world->GetBodies()[i + 1];
+        JointConstraint *joint = new JointConstraint(a, b, a->position);
+        world->AddConstraint(joint);
+    }
 
     // world->AddForce(Vec2(1.f * PIXELS_PER_METER, 0.f));
 }
@@ -134,6 +142,12 @@ void Application::Update() {
 }
 
 void Application::Render() {
+    for (auto joint : world->GetConstraints()) {
+        const Vec2 pa = joint->a->LocalSpaceToWorldSpace(joint->aPoint);
+        const Vec2 pb = joint->b->LocalSpaceToWorldSpace(joint->aPoint);
+        Graphics::DrawLine(pa.x, pa.y, pb.x, pb.y, 0xFF5555FF);
+    }
+
     for (auto body : world->GetBodies()) {
         Uint32 color = 0xFF00FF00;
         auto shapeType = body->shape->GetType();

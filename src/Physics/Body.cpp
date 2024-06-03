@@ -20,6 +20,8 @@ Body::Body(Shape *shape, float x, float y, float mass)
     } else {
         this->invI = 0.0f;
     }
+    // IsStatic object should update vertices here
+    shape->UpdateVertices(rotation, position);
     std::cout << "Body constructor" << std::endl;
 }
 

@@ -49,8 +49,12 @@ void World::Update(float dt, bool debug) {
         body->IntegrateForces(dt);
     }
 
-    for (auto constraint : constraints) {
-        constraint->Solve();
+    // Solve all constraints
+    // Solve system of constraints iteratively
+    for (int i = 0; i < 50; i++) {
+        for (auto constraint : constraints) {
+            constraint->Solve();
+        }
     }
 
     for (auto body : bodies) {
