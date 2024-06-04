@@ -45,9 +45,9 @@ struct Body {
     void IntegrateVelocities(const float dt);
     // Object with infinite mass
     bool IsStatic();
-    void ApplyInpulseLinear(const Vec2 &j);
-    void ApplyInpulseAngular(const float j);
-    void ApplyInpulseAtPoint(const Vec2 &j, const Vec2 &r);
+    void ApplyImpulseLinear(const Vec2 &j);
+    void ApplyImpulseAngular(const float j);
+    void ApplyImpulseAtPoint(const Vec2 &j, const Vec2 &r);
 
     void SetTexture(const char *textureFileName);
 

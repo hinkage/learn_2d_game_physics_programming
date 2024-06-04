@@ -37,8 +37,8 @@ void World::Update(float dt, bool debug) {
     std::vector<PenetrationConstraint> penetrations;
 
     for (auto body : bodies) {
-        // Vec2 weight = Vec2(0.f, body->mass * G * PIXELS_PER_METER);
-        // body->AddForce(weight);
+        Vec2 weight = Vec2(0.f, body->mass * G * PIXELS_PER_METER);
+        body->AddForce(weight);
 
         for (auto &force : forces) {
             body->AddForce(force);
@@ -84,21 +84,21 @@ void World::Update(float dt, bool debug) {
     }
 
     // Solve all constraints
-    // for (auto constraint : constraints) {
-    //     constraint->PreSolve(dt);
-    // }
-    // for (auto &constraint : penetrations) {
-    //     constraint.PreSolve(dt);
-    // }
-    // // Solve system of constraints iteratively
-    // for (int i = 0; i < 5; i++) {
-    //     for (auto constraint : constraints) {
-    //         constraint->Solve();
-    //     }
-    //     for (auto &constraint : penetrations) {
-    //         constraint.Solve();
-    //     }
-    // }
+    for (auto constraint : constraints) {
+        constraint->PreSolve(dt);
+    }
+    for (auto &constraint : penetrations) {
+        constraint.PreSolve(dt);
+    }
+    // Solve system of constraints iteratively
+    for (int i = 0; i < 5; i++) {
+        for (auto constraint : constraints) {
+            constraint->Solve();
+        }
+        for (auto &constraint : penetrations) {
+            constraint.Solve();
+        }
+    }
 
     for (auto body : bodies) {
         body->IntegrateVelocities(dt);

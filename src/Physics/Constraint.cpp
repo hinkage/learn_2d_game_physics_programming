@@ -65,10 +65,10 @@ void JointConstraint::PreSolve(const float dt) {
     // Warm Start (apply cached lambda)
     MatMN Jt = jacobian.Transpose();
     VecN impulse = Jt * cachedLambda;
-    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
-    a->ApplyInpulseAngular(impulse[2]);
-    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
-    b->ApplyInpulseAngular(impulse[5]);
+    a->ApplyImpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyImpulseAngular(impulse[2]);
+    b->ApplyImpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyImpulseAngular(impulse[5]);
 
     // Compute the bias term (baumgarte stabilization)
     const float beta = 0.2f;
@@ -94,10 +94,10 @@ void JointConstraint::Solve() {
     cachedLambda += lambda;
 
     VecN impulse = Jt * lambda;
-    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
-    a->ApplyInpulseAngular(impulse[2]);
-    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
-    b->ApplyInpulseAngular(impulse[5]);
+    a->ApplyImpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyImpulseAngular(impulse[2]);
+    b->ApplyImpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyImpulseAngular(impulse[5]);
 }
 
 void JointConstraint::PostSolve() {}
@@ -161,10 +161,10 @@ void PenetrationConstraint::PreSolve(const float dt) {
     // Warm Start (apply cached lambda)
     MatMN Jt = jacobian.Transpose();
     VecN impulse = Jt * cachedLambda;
-    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
-    a->ApplyInpulseAngular(impulse[2]);
-    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
-    b->ApplyInpulseAngular(impulse[5]);
+    a->ApplyImpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyImpulseAngular(impulse[2]);
+    b->ApplyImpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyImpulseAngular(impulse[5]);
 
     // Compute the bias term (baumgarte stabilization)
     const float beta = 0.2f;
@@ -212,10 +212,10 @@ void PenetrationConstraint::Solve() {
     lambda = cachedLambda - oldLambda;
 
     VecN impulse = Jt * lambda;
-    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
-    a->ApplyInpulseAngular(impulse[2]);
-    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
-    b->ApplyInpulseAngular(impulse[5]);
+    a->ApplyImpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyImpulseAngular(impulse[2]);
+    b->ApplyImpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyImpulseAngular(impulse[5]);
 }
 
 void PenetrationConstraint::PostSolve() {}

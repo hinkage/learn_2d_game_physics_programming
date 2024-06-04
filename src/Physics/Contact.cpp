@@ -47,6 +47,6 @@ void Contact::ResolveCollision() {
 
     Vec2 j = jN + jT;
 
-    a->ApplyInpulseAtPoint(j, ra);
-    b->ApplyInpulseAtPoint(-j, rb);
+    a->ApplyImpulseAtPoint(j, ra);
+    b->ApplyImpulseAtPoint(-j, rb);
 }

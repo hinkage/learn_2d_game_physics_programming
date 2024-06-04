@@ -3,6 +3,7 @@
 #include "./Graphics.h"
 #include "Physics/Body.h"
 #include "Physics/World.h"
+#include <SDL_render.h>
 #include <vector>
 
 class Application {
@@ -19,6 +20,7 @@ class Application {
     float k = 1500;
     float restLength = 200;
     const int NUM_BODIES = 1;
+    SDL_Texture *bgTexture = nullptr;
 
   public:
     Application() = default;

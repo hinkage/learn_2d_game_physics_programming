@@ -17,11 +17,22 @@ float CircleShape::GetMomentOfInertia() const {
 }
 
 PolygonShape::PolygonShape(const std::vector<Vec2> vertices) {
+    float minX = std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::lowest();
+    float maxY = std::numeric_limits<float>::lowest();
     for (int i = 0; i < vertices.size(); i++) {
         auto &vertex = vertices[i];
         localVertices.push_back(vertex);
         worldVertices.push_back(vertex);
+        // Find min and max X and Y to calculate polygon width and height
+        minX = std::min(minX, vertex.x);
+        maxX = std::max(maxX, vertex.x);
+        minY = std::min(minY, vertex.y);
+        maxY = std::max(maxY, vertex.y);
     }
+    width = maxX - minX;
+    height = maxY - minY;
     std::cout << "PolygonShape constructor" << std::endl;
 }
 

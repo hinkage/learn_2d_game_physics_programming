@@ -24,6 +24,9 @@ struct CircleShape : public Shape {
 };
 
 struct PolygonShape : public Shape {
+    float width;
+    float height;
+
     std::vector<Vec2> localVertices;
     std::vector<Vec2> worldVertices;
 
