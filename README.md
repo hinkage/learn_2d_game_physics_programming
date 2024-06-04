@@ -251,3 +251,11 @@ Ragdoll with Joint Constraints
 
 <img src="./assets/images/ragdoll2.png">
 
+### Penetration Constraint
+
+<img src="./assets/images/derive_penetration_Jacobian.png" height="600">
+
+这个图normal的方向和前面的不一致，前面的是正确的。
+
+
+

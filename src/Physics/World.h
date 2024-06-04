@@ -23,6 +23,4 @@ class World {
     void AddForce(const Vec2 &force);
     void AddTorque(float torque);
     void Update(float dt, bool debug);
-
-    void CheckCollisions(bool debug);
 };

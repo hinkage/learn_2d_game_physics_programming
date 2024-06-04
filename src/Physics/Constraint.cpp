@@ -70,7 +70,7 @@ void JointConstraint::PreSolve(const float dt) {
     b->ApplyInpulseAngular(impulse[5]);
 
     // Compute the bias term (baumgarte stabilization)
-    const float beta = 0.1f;
+    const float beta = 0.2f;
     auto ab = pb - pa;
     float C = ab.Dot(ab);
     C = std::max(0.f, C - 0.01f);
@@ -100,3 +100,90 @@ void JointConstraint::Solve() {
 }
 
 void JointConstraint::PostSolve() {}
+
+PenetrationConstraint::PenetrationConstraint()
+    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
+    cachedLambda.Zero();
+}
+
+PenetrationConstraint::PenetrationConstraint(Body *a, Body *b,
+                                             const Vec2 &aCollisionPoint,
+                                             const Vec2 &bCollisonPoint,
+                                             const Vec2 &normal)
+    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
+    cachedLambda.Zero();
+    this->a = a;
+    this->b = b;
+    this->aPoint = a->WorldSpaceToLocalSpace(aCollisionPoint);
+    this->bPoint = b->WorldSpaceToLocalSpace(bCollisonPoint);
+    this->normal = a->WorldSpaceToLocalSpace(normal);
+}
+
+void PenetrationConstraint::PreSolve(const float dt) {
+    Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
+    Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
+    Vec2 n = a->LocalSpaceToWorldSpace(normal);
+
+    Vec2 ra = pa - a->position;
+    Vec2 rb = pb - b->position;
+
+    jacobian.Zero();
+
+    Vec2 J1 = -n;
+    jacobian.rows[0][0] = J1.x;
+    jacobian.rows[0][1] = J1.y;
+
+    float J2 = (-ra).Cross(n);
+    jacobian.rows[0][2] = J2;
+
+    Vec2 J3 = n;
+    jacobian.rows[0][3] = J3.x;
+    jacobian.rows[0][4] = J3.y;
+
+    float J4 = rb.Cross(n);
+    jacobian.rows[0][5] = J4;
+
+    // Warm Start (apply cached lambda)
+    MatMN Jt = jacobian.Transpose();
+    VecN impulse = Jt * cachedLambda;
+    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyInpulseAngular(impulse[2]);
+    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyInpulseAngular(impulse[5]);
+
+    // Compute the bias term (baumgarte stabilization)
+    const float beta = 0.2f;
+    auto ab = pb - pa;
+    float C = ab.Dot(-n);
+    C = std::min(0.f, C + 0.01f);
+    bias = (beta / dt) * C;
+}
+
+void PenetrationConstraint::Solve() {
+    VecN V = GetVelocities();
+    MatMN invM = GetInvM();
+
+    MatMN &J = jacobian;
+    MatMN Jt = J.Transpose();
+
+    // Ax = b
+    MatMN A = J * invM * Jt;
+    VecN vb = J * V * -1.f;
+    vb[0] -= bias;
+
+    VecN lambda = MatMN::SolveGaussSeidel(A, vb);
+
+    // clamp
+    VecN oldLambda = cachedLambda;
+    cachedLambda += lambda;
+    cachedLambda[0] = cachedLambda[0] < 0.f ? 0.f : cachedLambda[0];
+    lambda = cachedLambda - oldLambda;
+
+    VecN impulse = Jt * lambda;
+    a->ApplyInpulseLinear(Vec2(impulse[0], impulse[1]));
+    a->ApplyInpulseAngular(impulse[2]);
+    b->ApplyInpulseLinear(Vec2(impulse[3], impulse[4]));
+    b->ApplyInpulseAngular(impulse[5]);
+}
+
+void PenetrationConstraint::PostSolve() {}

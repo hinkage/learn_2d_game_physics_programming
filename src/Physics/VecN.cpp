@@ -13,6 +13,8 @@ VecN::VecN(const VecN &v) {
 }
 
 VecN &VecN::operator=(const VecN &v) {
+    if (this == &v)
+        return *this; // self-assignment check
     delete[] data;
     N = v.N;
     data = new float[N];
@@ -55,7 +57,7 @@ const VecN VecN::operator+(const VecN &v) {
 const VecN VecN::operator-(const VecN &v) {
     VecN result = *this;
     for (int i = 0; i < N; i++) {
-        result.data[i] += v.data[i];
+        result.data[i] -= v.data[i];
     }
     return result;
 }
@@ -81,10 +83,6 @@ VecN &VecN::operator*=(const float n) {
     return *this;
 }
 
-float VecN::operator[](const int index) const {
-    return data[index];
-}
+float VecN::operator[](const int index) const { return data[index]; }
 
-float &VecN::operator[](const int index) {
-    return data[index];
-}
+float &VecN::operator[](const int index) { return data[index]; }
