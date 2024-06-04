@@ -37,8 +37,8 @@ void World::Update(float dt, bool debug) {
     std::vector<PenetrationConstraint> penetrations;
 
     for (auto body : bodies) {
-        Vec2 weight = Vec2(0.f, body->mass * G * PIXELS_PER_METER);
-        body->AddForce(weight);
+        // Vec2 weight = Vec2(0.f, body->mass * G * PIXELS_PER_METER);
+        // body->AddForce(weight);
 
         for (auto &force : forces) {
             body->AddForce(force);
@@ -58,48 +58,47 @@ void World::Update(float dt, bool debug) {
         for (int j = i + 1; j < bodies.size(); j++) {
             Body *a = bodies[i];
             Body *b = bodies[j];
-            a->isColliding = false;
-            b->isColliding = false;
-            Contact contact;
-            if (CollisionDetection::IsColliding(a, b, contact)) {
+            std::vector<Contact> contacts;
+            if (CollisionDetection::IsColliding(a, b, contacts)) {
                 // contact.ResolveCollision();
-                auto pen =
-                    PenetrationConstraint(contact.a, contact.b, contact.start,
-                                          contact.end, contact.normal);
-                penetrations.push_back(pen);
+                for (auto contact : contacts) {
+                    auto pen = PenetrationConstraint(contact.a, contact.b,
+                                                     contact.start, contact.end,
+                                                     contact.normal);
+                    penetrations.push_back(pen);
 
-                if (debug) {
-                    Graphics::DrawFillCircle(contact.start.x, contact.start.y,
-                                             3, 0xFFFF00FF);
-                    Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3,
-                                             0xFFFF00FF);
-                    Graphics::DrawLine(contact.start.x, contact.start.y,
-                                       contact.start.x + contact.normal.x * 15,
-                                       contact.start.y + contact.normal.y * 15,
-                                       0xFFFF00FF);
-                    a->isColliding = true;
-                    b->isColliding = true;
+                    if (debug) {
+                        Graphics::DrawFillCircle(
+                            contact.start.x, contact.start.y, 3, 0xFFFF00FF);
+                        Graphics::DrawFillCircle(contact.end.x, contact.end.y,
+                                                 3, 0xFFFF00FF);
+                        Graphics::DrawLine(
+                            contact.start.x, contact.start.y,
+                            contact.start.x + contact.normal.x * 15,
+                            contact.start.y + contact.normal.y * 15,
+                            0xFFFF00FF);
+                    }
                 }
             }
         }
     }
 
     // Solve all constraints
-    for (auto constraint : constraints) {
-        constraint->PreSolve(dt);
-    }
-    for (auto &constraint : penetrations) {
-        constraint.PreSolve(dt);
-    }
-    // Solve system of constraints iteratively
-    for (int i = 0; i < 5; i++) {
-        for (auto constraint : constraints) {
-            constraint->Solve();
-        }
-        for (auto &constraint : penetrations) {
-            constraint.Solve();
-        }
-    }
+    // for (auto constraint : constraints) {
+    //     constraint->PreSolve(dt);
+    // }
+    // for (auto &constraint : penetrations) {
+    //     constraint.PreSolve(dt);
+    // }
+    // // Solve system of constraints iteratively
+    // for (int i = 0; i < 5; i++) {
+    //     for (auto constraint : constraints) {
+    //         constraint->Solve();
+    //     }
+    //     for (auto &constraint : penetrations) {
+    //         constraint.Solve();
+    //     }
+    // }
 
     for (auto body : bodies) {
         body->IntegrateVelocities(dt);

@@ -1,5 +1,6 @@
 #include "Shape.h"
 #include <iostream>
+#include <limits>
 
 CircleShape::CircleShape(float radius) : radius(radius) {
     std::cout << "Circle constructor" << std::endl;
@@ -48,8 +49,9 @@ Vec2 PolygonShape::EdgeAt(int index) const {
     return worldVertices[nextVertex] - worldVertices[currVertex];
 }
 
-float PolygonShape::FindMinSeparation(const PolygonShape &b, Vec2 &axis,
-                                      Vec2 &point) const {
+float PolygonShape::FindMinSeparation(const PolygonShape &b,
+                                      int &indexReferenceEdge,
+                                      Vec2 &supportPoint) const {
     float separation = std::numeric_limits<float>::lowest();
     for (int i = 0; i < worldVertices.size(); i++) {
         Vec2 va = worldVertices[i];
@@ -67,11 +69,48 @@ float PolygonShape::FindMinSeparation(const PolygonShape &b, Vec2 &axis,
         }
         if (minSep > separation) {
             separation = minSep;
-            axis = edge;
-            point = minVertex;
+            indexReferenceEdge = i;
+            supportPoint = minVertex;
         }
     }
     return separation;
+}
+
+int PolygonShape::FindIncidentEdge(const Vec2 &normal) const {
+    int indexIncidentEdge;
+    float minProj = std::numeric_limits<float>::max();
+    for (int i = 0; i < this->worldVertices.size(); i++) {
+        auto edgeNormal = this->EdgeAt(i).Normal();
+        auto proj = edgeNormal.Dot(normal);
+        if (proj < minProj) {
+            minProj = proj;
+            indexIncidentEdge = i;
+        }
+    }
+    return indexIncidentEdge;
+}
+
+int PolygonShape::ClipSegmentToLine(const std::vector<Vec2> &contactsIn,
+                                    std::vector<Vec2> &contactsOut,
+                                    const Vec2 &c0, const Vec2 &c1) const {
+    int numOut = 0;
+    Vec2 normal = (c1 - c0).Normalize();
+    // Use cross product to calculate distance from point to reference edge
+    float dist0 = (contactsIn[0] - c0).Cross(normal);
+    float dist1 = (contactsIn[1] - c0).Cross(normal);
+    if (dist0 <= 0.f) {
+        contactsOut[numOut++] = contactsIn[0];
+    }
+    if (dist1 <= 0.f) {
+        contactsOut[numOut++] = contactsOut[1];
+    }
+    if (dist0 * dist1 < 0.f) {
+        float totalDist = dist0 - dist1;
+        float t = dist0 / totalDist;
+        Vec2 contact = contactsIn[0] + (contactsIn[1] - contactsIn[0]) * t;
+        contactsOut[numOut++] = contact;
+    }
+    return numOut;
 }
 
 BoxShape::BoxShape(float width, float height) : width(width), height(height) {

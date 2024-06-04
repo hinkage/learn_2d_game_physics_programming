@@ -18,10 +18,14 @@ void Application::Setup() {
     auto w = Graphics::Width();
     auto h = Graphics::Height();
 
-    Body *bigBall = new Body(new CircleShape(64), Graphics::Width() / 2.0,
-                             Graphics::Height() / 2.0, 0.0);
-    bigBall->SetTexture("./assets/bowlingball.png");
-    world->AddBody(bigBall);
+    Body *bigBox = new Body(new BoxShape(200, 200), Graphics::Width() / 2.0,
+                            Graphics::Height() / 2.0, 0.0);
+    world->AddBody(bigBox);
+
+    Body *small = new Body(new BoxShape(150, 150), Graphics::Width() / 2.0,
+                           Graphics::Height() / 2.0, 1.0);
+    small->rotation = 0.f / 10.f;
+    world->AddBody(small);
 
     Body *floor =
         new Body(new BoxShape(Graphics::Width() - 50, 50),
@@ -91,6 +95,9 @@ void Application::Input() {
         case SDL_MOUSEMOTION: {
             mouseCursor.x = event.motion.x;
             mouseCursor.y = event.motion.y;
+            auto small = world->GetBodies()[1];
+            small->position.x = mouseCursor.x;
+            small->position.y = mouseCursor.y;
             break;
         }
         case SDL_MOUSEBUTTONDOWN:

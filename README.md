@@ -257,5 +257,12 @@ Ragdoll with Joint Constraints
 
 这个图normal的方向和前面的不一致，前面的是正确的。
 
+## Multiple Contact Points
+
+https://github.com/erincatto/box2d-lite/blob/master/docs/GDC2006_Catto_Erin_PhysicsTutorial.pdf
+
+<img src="./assets/images/incident_edge.png">
+
+<img src="./assets/images/multiple_contacts.png">
 
 
