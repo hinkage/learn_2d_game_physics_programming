@@ -42,8 +42,10 @@ class PenetrationConstraint : public Constraint {
     MatMN jacobian;
     VecN cachedLambda;
     float bias;
-
+    // Normal of penetration in A's local space
     Vec2 normal;
+    // Friction coefficient
+    float friction;
 
   public:
     PenetrationConstraint();

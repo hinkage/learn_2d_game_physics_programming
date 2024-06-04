@@ -1,4 +1,5 @@
 #include "Constraint.h"
+#include <algorithm>
 
 MatMN Constraint::GetInvM() const {
     MatMN invM(6, 6);
@@ -102,16 +103,18 @@ void JointConstraint::Solve() {
 void JointConstraint::PostSolve() {}
 
 PenetrationConstraint::PenetrationConstraint()
-    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
+    : Constraint(), jacobian(2, 6), cachedLambda(2), bias(0.f) {
     cachedLambda.Zero();
+    friction = 0.f;
 }
 
 PenetrationConstraint::PenetrationConstraint(Body *a, Body *b,
                                              const Vec2 &aCollisionPoint,
                                              const Vec2 &bCollisonPoint,
                                              const Vec2 &normal)
-    : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.f) {
+    : Constraint(), jacobian(2, 6), cachedLambda(2), bias(0.f) {
     cachedLambda.Zero();
+    friction = 0.f;
     this->a = a;
     this->b = b;
     this->aPoint = a->WorldSpaceToLocalSpace(aCollisionPoint);
@@ -142,6 +145,18 @@ void PenetrationConstraint::PreSolve(const float dt) {
 
     float J4 = rb.Cross(n);
     jacobian.rows[0][5] = J4;
+
+    friction = std::max(a->friction, b->friction);
+    if (friction > 0.f) {
+        // tagent
+        Vec2 t = n.Normal();
+        jacobian.rows[1][0] = -t.x;
+        jacobian.rows[1][1] = -t.y;
+        jacobian.rows[1][2] = (-ra).Cross(t);
+        jacobian.rows[1][3] = t.x;
+        jacobian.rows[1][4] = t.y;
+        jacobian.rows[1][5] = rb.Cross(t);
+    }
 
     // Warm Start (apply cached lambda)
     MatMN Jt = jacobian.Transpose();
@@ -177,6 +192,13 @@ void PenetrationConstraint::Solve() {
     VecN oldLambda = cachedLambda;
     cachedLambda += lambda;
     cachedLambda[0] = cachedLambda[0] < 0.f ? 0.f : cachedLambda[0];
+
+    if (friction > 0.f) {
+        float maxFriction = cachedLambda[0] * friction;
+        cachedLambda[1] =
+            std::clamp(cachedLambda[1], -maxFriction, maxFriction);
+    }
+
     lambda = cachedLambda - oldLambda;
 
     VecN impulse = Jt * lambda;
