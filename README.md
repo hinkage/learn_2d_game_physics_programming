@@ -13,7 +13,9 @@ Verlet Integration: Excellent for conserving energy and handling physical system
 Runge-Kutta Methods: Highly accurate and flexible, suitable for a wide range of problems, but can suffer from stability issues and require more computational effort per step.
 
 ## Drag Force
+
 $$F_d = \frac{1}{2} \rho v^2 C_d A * -\hat{v}$$
+
 ρ (rho) is the density of the fluid (kg/m³).
 
 v is the velocity of the body relative to the fluid (m/s).
@@ -24,7 +26,9 @@ A is the reference area of the body (m²), often the frontal area for objects mo
 
 ## Friction Force
 ### Static Friction
+
 $$F_s \leq \mu_s N$$
+
 Static friction acts on objects that are not moving relative to each other.
 F_s is the static friction force.
 
@@ -34,6 +38,7 @@ N is the normal force, which is the perpendicular force exerted by a surface on 
 
 The static friction force adjusts to match the applied force up to a maximum value. If the applied force exceeds this maximum, the object starts to move, and kinetic friction takes over.
 ### Kinetic Friction
+
 $$F_k = \mu_k N$$
 
 Kinetic friction acts on objects that are moving relative to each other. 
@@ -45,9 +50,11 @@ F_k is the kinetic friction force.
 N is the normal force.
 
 ## Newton's Law of Universal Gravitation
+
 $$F_g = G \frac{m_1 m_2}{r^2}$$
 
 ## Spring Force
+
 $$F_s = -k x$$
 
 ## Simulating Soft Body
@@ -56,14 +63,19 @@ $$F_s = -k x$$
 Add spring force beteen 4 particles.
 
 ## Angular Velocity
+
 $$\omega = \frac{d\theta}{dt}$$
 
 <img src="./assets/images/angular_velocity.png" height="400">
 
 ## Torque Force
+
 $$\tau = r F \sin(\theta)$$
+
 Simplify it to
+
 $$\tau = I \alpha$$
+
 I is Moment of Inertia, which measures how much an object "resists" to change its angular acceleration.
 
 https://en.wikipedia.org/wiki/List_of_moments_of_inertia
@@ -84,7 +96,9 @@ Projection Method
 The Projection method, also known as the Position Correction method, involves directly adjusting the positions of colliding objects to resolve interpenetration. This method is typically used in conjunction with other collision resolution techniques to ensure that objects do not overlap.
 
 $$\mathbf{MTV} = d \mathbf{n}$$
+
 $$\Delta \mathbf{r}_1 = -\frac{m_2}{m_1 + m_2} \mathbf{MTV}$$
+
 $$\Delta \mathbf{r}_2 = \frac{m_1}{m_1 + m_2} \mathbf{MTV}$$
 
 Minimum Translation Vector(MTV).
@@ -136,9 +150,13 @@ bool Body::IsStatic() {
 ```
 #### Momentum
 Elastic Collisions
+
 $$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = m_1 v_{1,\text{final}} + m_2 v_{2,\text{final}}$$
+
 $$\frac{1}{2} m_1 v_{1,\text{initial}}^2 + \frac{1}{2} m_2 v_{2,\text{initial}}^2 = \frac{1}{2} m_1 v_{1,\text{final}}^2 + \frac{1}{2} m_2 v_{2,\text{final}}^2$$
+
 Inelastic Collisions
+
 $$m_1 v_{1,\text{initial}} + m_2 v_{2,\text{initial}} = (m_1 + m_2) v_{\text{final}}$$
 
 #### Linear Collision Response
@@ -195,6 +213,7 @@ Constraints are rules the must be satisfied.
 Constraints remove "degrees of freedom".
 
 ### Floor Collision Velocity Constraint
+
 $$v_y=-\frac{\beta}{dt}*c$$
 
 Baumgarte stabilization factor.
